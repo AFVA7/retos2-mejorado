@@ -40,12 +40,13 @@ public class LoginController {
     }
 
     @PostMapping("/cambiar-passwd")
-    public ResponseEntity<String> cambiarPassword(@RequestBody NuevaPasswordDTO nuevaPasswordDTO) {
+    public ResponseEntity<MensajeDTO<String>> cambiarPassword(@RequestBody NuevaPasswordDTO nuevaPasswordDTO) {
+        System.out.println("hola hola hola");
         try {
             cuentaServicio.cambiarPasswd(nuevaPasswordDTO);
-            return ResponseEntity.ok("Contraseña actualizada con éxito.");
+            return ResponseEntity.ok(new MensajeDTO<>(false, "Contraseña actualizada con éxito."));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(new MensajeDTO<>(true, e.getMessage()));
         }
     }
 }
