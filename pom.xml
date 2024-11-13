@@ -147,7 +147,20 @@
 				<groupId>io.qameta.allure</groupId>
 				<artifactId>allure-maven</artifactId>
 				<version>2.10.0</version>
-
+				<executions>
+					<execution>
+						<id>allure-results</id>
+						<goals>
+							<goal>report</goal>
+							<goal>serve</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<propertiesFilePath>src/test/resources/allure.properties</propertiesFilePath>
+					<resultsDirectory>${project.build.directory}/allure-results</resultsDirectory>
+					<reportDirectory>target/site/allure-report</reportDirectory>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
