@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.github.javafaker.Faker;
 
 import static io.restassured.RestAssured.given;
 
@@ -20,20 +21,22 @@ public class GestionUsuariosSteps {
     private Response response;
     private Map<String, Object> requestBody;
     private final TestContext testContext = new TestContext();
+    private final Faker faker = new Faker();
 
 
     // Escenario: Crear un nuevo usuario exitosamente
     @Given("que el cliente tiene un payload válido con nombre, apellido, cédula, email, contraseña, teléfono, fecha de nacimiento y dirección")
     public void givenClienteConPayloadValido() {
         requestBody = new HashMap<>();
-        requestBody.put("name", "Juan");
-        requestBody.put("lastname", "Carlos");
-        requestBody.put("cedula", "8384779431");
-        requestBody.put("email", "juancarlos09@yopmail.com");
-        requestBody.put("password", "password123");
-        requestBody.put("phone", "+1876543995");
+        requestBody.put("name", faker.name().firstName());
+        requestBody.put("lastname", faker.name().lastName());
+        requestBody.put("cedula", faker.number().digits(10));
+        requestBody.put("email", faker.internet().emailAddress());
+        requestBody.put("password", faker.internet().password(8, 16));
+        requestBody.put("phone", "+1" + faker.number().digits(9));
         requestBody.put("birthdate", "1990-01-01T00:00:00.000Z");
-        requestBody.put("address", "Calle Falsa 123");
+        requestBody.put("address", "Calle " + faker.address().streetName() + " " + faker.address().buildingNumber());
+        System.out.println(requestBody);
     }
 
     @When("el cliente envía una solicitud POST a {string}")
@@ -257,7 +260,7 @@ public class GestionUsuariosSteps {
     @Given("que el cliente tiene un token de recuperación válido y una nueva contraseña válida")
     public void givenTokenRecuperacionYNuevaContrasena() {
         requestBody = new HashMap<>();
-        requestBody.put("token", "MTM7MjAyNC0xMS0xMFQyMjo0NDowMi41MTUwMjA0NDM=");  // Token de ejemplo
+        requestBody.put("token", "MTM7MjAyNC0xMS0xMVQxNzoyMjozMi4zNjc2NTc0MzQ=");  // Token que llega al gmail
         requestBody.put("nuevaPasswd", "la_nueva_contraseña");  // Nueva contraseña válida
     }
 
@@ -274,16 +277,16 @@ public class GestionUsuariosSteps {
         System.out.println(response.asString());
     }
 
-    //@Then("el sistema debe devolver un código de estado {int} para cambio de contraseña")
-    //public void thenCodigoDeEstadoCambioContrasena(int statusCode) {
-      //  Assert.assertEquals(statusCode, response.getStatusCode());
-    //}
+    @Then("el sistema debe devolver un código de estado {int} para cambio de contraseña")
+    public void thenCodigoDeEstadoCambioContrasena(int statusCode) {
+        Assert.assertEquals(statusCode, response.getStatusCode());
+    }
 
-    //@Then("la respuesta debe contener el mensaje de cambio de contraseña {string}")
-    //public void thenRespuestaContieneMensajeCambio(String mensajeEsperado) {
-      //  String mensajeReal = response.jsonPath().getString("respuesta");
-        //Assert.assertEquals(mensajeEsperado, mensajeReal);
-    //}
+    @Then("la respuesta debe contener el mensaje de cambio de contraseña {string}")
+    public void thenRespuestaContieneMensajeCambio(String mensajeEsperado) {
+        String mensajeReal = response.jsonPath().getString("respuesta");
+        Assert.assertEquals(mensajeEsperado, mensajeReal);
+    }
 
 
     public String realizarLoginYObtenerToken(String email, String password) {
