@@ -7,7 +7,7 @@ import io.cucumber.spring.CucumberContextConfiguration;
 
 @CucumberContextConfiguration
 @SpringBootTest // O puedes usar WebEnvironment.DEFINED_PORT si prefieres un puerto específico.
-@ContextConfiguration(classes = ApiRestApplicationTests.class)
+@ContextConfiguration(classes = TestRunner.class)
 public class CucumberSpringConfiguration {
 
 
